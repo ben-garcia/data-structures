@@ -1,0 +1,89 @@
+/**
+ * FILE: bintree.template
+ * IMPLEMENTS: The BinaryTreeNode class (see bintree.h for documentation). 
+ */
+#include <cassert>   // Provides assert
+#include <cstdlib>   // Provides nullptr, std::size_t
+#include <iomanip>   // Provides std::setw
+#include <iostream>  // Provides std::cout
+
+namespace main_savitch_10 {
+
+template <class Process, class BTNode>
+void inorder(Process f, BTNode *nodePtr) {
+    if (nodePtr != nullptr) {
+        inorder(f, nodePtr->left());
+        f(nodePtr->data());
+        inorder(f, nodePtr->right());
+    }
+}
+
+template <class Process, class BTNode>
+void postorder(Process f, BTNode *nodePtr) {
+    if (nodePtr != nullptr) {
+        postorder(f, nodePtr->left());
+        postorder(f, nodePtr->right());
+        f(nodePtr->data());
+    }
+}
+
+template <class Process, class BTNode>
+void preorder(Process f, BTNode *nodePtr) {
+    if (nodePtr != nullptr) {
+        f(nodePtr->data());
+        preorder(f, nodePtr->left());
+        preorder(f, nodePtr->right());
+    }
+}
+
+template <class Item, class SizeType>
+void print(const BinaryTreeNode<Item> *nodePtr, SizeType depth) {
+    std::cout << std::setw(4 * depth) << "";  // Indentation
+    if (nodePtr == nullptr) {
+        std::cout << "[Empty]" << std::endl;
+    } else if (nodePtr->isLeaf()) {
+        std::cout << nodePtr->data();
+        std::cout << " [leaf]" << std::endl;
+    } else {
+        std::cout << nodePtr->data() << std::endl;
+        print(nodePtr->right(), depth + 1);
+        print(nodePtr->left(), depth + 1);
+    }
+}
+
+template <class Item>
+void treeClear(BinaryTreeNode<Item> *&rootPtr) {
+    BinaryTreeNode<Item> *child;
+    if (rootPtr != nullptr) {
+        child = rootPtr->left();
+        treeClear(child);
+        child = rootPtr->right();
+        treeClear(child);
+        delete rootPtr;
+        rootPtr = nullptr;
+    }
+}
+
+template <class Item>
+BinaryTreeNode<Item> *treeCopy(const BinaryTreeNode<Item> *rootPtr) {
+    BinaryTreeNode<Item> *lPtr;
+    BinaryTreeNode<Item> *rPtr;
+
+    if (rootPtr == nullptr) {
+        return nullptr;
+    } else {
+        lPtr = treeCopy(rootPtr->left());
+        rPtr = treeCopy(rootPtr->right());
+        return new BinaryTreeNode<Item>(rootPtr->data(), lPtr, rPtr);
+    }
+}
+
+template <class Item>
+std::size_t treeSize(const BinaryTreeNode<Item> *nodePtr) {
+    if (nodePtr == nullptr) {
+        return 0;
+    } else {
+        return 1 + treeSize(nodePtr->left() + treeSize(nodePtr->right()));
+    }
+}
+}  // namespace main_savitch_10

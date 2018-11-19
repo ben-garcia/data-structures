@@ -1,0 +1,71 @@
+/*
+  FILE: Queue2.template
+  TEMPLATE CLASS IMPLEMENTATION: Queue<Item> (see Queue2.h for documentation)
+  This file is included in the header file and not compiled separately.
+  INVARIANT for the Queue class:
+    1. The number of items in the queue is stored in the member variable count.
+    2. The items in the queue are stored in a linked list, with the front of the queue stored at
+      the head node and the rear of the queue stored at the final node.
+    3. The member variable frontPtr is the head pointer of the linked list of items. For a
+       non-empty queue, the member variable rearPtr is the tail pointer of the linked list;
+       for an empty list, we don't care what's stored in rearPtr.
+*/
+
+#include <cassert>    // Provide assert
+
+#include "Node2.h"    // main_savitch_6B::Node from Figure 6.4 on page 321
+
+namespace main_savitch_8C {
+  template <class Item>
+  Queue<Item>::Queue() {
+    count = 0;
+    frontPtr = NULL;
+  }
+
+  template <class Item>
+  Queue<Item>::Queue(const Queue<Item>& source) {
+    count = source.count;
+    main_savitch_6B::listCopy(source.frontPr, frontPtr, rearPtr);
+  }
+
+  template <class Item>
+  Queue<Item>::~Queue() {
+    main_savitch_6B::listClear(frontPtr);
+  }
+
+  template <class Item>
+  void Queue<Item>::operator =(const Queue<Item>& source) {
+    if (this == &source) {    // Handle self-assignment
+      return;
+    }
+    main_savitch_6B::listClear(frontPtr);
+    main_savitch_6B::listCopy(source.frontPtr, frontPtr, rearPtr);
+    count = source.count;
+  }
+
+  template <class Item>
+  Item Queue<Item>::front() const {
+    assert(!empty());
+    return frontPtr->data();
+  }
+
+  template <class Item>
+  void Queue<Item>::pop() {
+    assert(!empty());
+    main_savitch_6B::listHeadRemove(frontPtr);
+    --count;
+  }
+
+  template <class Item>
+  void Queue<Item>::push(const Item& entry) {
+    if (empty()) {
+      main_savitch_6B::listHeadInsert(frontPtr, entry);
+      rearPtr = frontPtr;
+    }
+    else {
+      main_savitch_6B::listInsert(rearPtr, entry);
+      rearPtr = rearPtr->link();
+    }
+    ++count;
+  }
+}

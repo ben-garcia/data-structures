@@ -1,0 +1,141 @@
+/*
+  FILE: Bag5.template
+  CLASS implemented: Bag( see Bag5.h for documentation)
+  NOTE:
+    Since Bag is a template class, this file is included in Node2.h.
+  INVARIANT for the Bag class:
+    1. The items in the bag are stored in a linked list.
+    2. The head pointer of the list is stored in the member variable headPtr.
+    3. The total number of items in the list is stored in the member variable manyNodes.
+*/
+
+#include <cassert>  // Provides assert
+#include <cstdlib>  // Provides NULL, rand
+
+#include "Node2.h"  // Provides Node
+
+namespace main_savitch_6B {
+  template <class Item>
+  Bag<Item>::Bag() {
+    headPtr = NULL;
+    manyNodes = 0;
+  }
+
+  template <class Item>
+  Bag<Item>::Bag(const Bag<Item>& source) {
+    Node<Item> *tailPtr; // Needed for arguement of listCopy;
+
+    listCopy(source.headPtr, headPtr, tailPtr);
+    manyNodes = source.manyNodes;
+  }
+
+  template <class Item>
+  Bag<Item>::~Bag() {
+    listClear(headPtr);
+    manyNodes = 0;
+  }
+
+  template <class Item>
+  typename Bag<Item>::sizeType Bag<Item>::count(const Item& target) const {
+    sizeType answer;
+    const Node<Item> *cursor;
+
+    answer = 0;
+    cursor = listSearch(headPtr, target);
+    while (cursor != NULL) {
+      // Each time that cursor is not NULL, we have another occurrence of target, so
+      // we add one to answer, adn move cursor to the next occurrence of the target.
+      answer++;
+      cursor = cursor->link();
+      cursor = listSearch(cursor, target);
+    }
+    return answer;
+  }
+
+  template <class Item>
+  typename Bag<Item>::sizeType Bag<Item>::erase(const Item& target) {
+    sizeType answer = 0;
+    Node<Item> *targetPtr;
+
+    targetPtr = listSearch(headPtr, target);
+    while (targetPtr != NULL) {
+      // Each tiem that targetPtr is not NULL, we have another occurrence of target.
+      // We remove this target using the same technique that was used in eraseOne.
+      answer++;
+      manyNodes--;
+      targetPtr->setData(headPtr->data());
+      targetPtr = targetPtr->link();
+      targetPtr = listSearch(targetPtr, target);
+      listHeadRemove(headPtr);
+    }
+    return answer;
+  }
+
+  template <class Item>
+  bool Bag<Item>::eraseOne(const Item& target) {
+    Node<Item> *targetPtr;
+
+    targetPtr = listSearch(headPtr, target);
+    if (targetPtr == NULL) {
+      return false;  // target isn't in the bag, so no work to do
+    }
+    targetPtr->setData(headPtr->data());
+    listHeadRemove(headPtr);
+    manyNodes--;
+    return true;
+  }
+
+  template <class Item>
+  Item Bag<Item>::grab() const {
+    sizeType i;
+    const Node<Item> *cursor;
+
+    assert(size() > 0);
+    i = (std::rand() % size()) + 1;
+    cursor = listLocate(headPtr, i);
+    return cursor->data();
+  }
+
+  template <class Item>
+  void Bag<Item>::insert(const Item& entry) {
+    listHeadInsert(headPtr, entry);
+    manyNodes++;
+  }
+
+  template <class Item>
+  void Bag<Item>::operator +=(const Bag& addend) {
+    Node<Item> *copyHeadPtr;
+    Node<Item> *copyTailPtr;
+
+    if (addend.manyNodes > 0) {
+      listCopy(addend.headPtr, copyHeadPtr, copyTailPtr);
+      headPtr = copyHeadPtr;
+      manyNodes += addend.manyNodes;
+    }
+  }
+
+  template <class Item>
+  void Bag<Item>::operator =(const Bag& source) {
+    Node<Item> *tailPtr;  // Needed for arguement to listCopy;
+
+    if (this == &source) {
+      return;
+    }
+
+    listClear(headPtr);
+    manyNodes = 0;
+    listCopy(source.headPtr, headPtr, tailPtr);
+    manyNodes = source.manyNodes;
+  }
+
+
+  template <class Item>
+  Bag<Item> operator +(const Bag<Item>& b1, const Bag<Item>& b2) {
+    Bag<Item> answer;
+
+    answer += b1;
+    answer += b2;
+
+    return answer;
+  }
+}

@@ -1,0 +1,170 @@
+namespace main_savitch_10 {
+
+/**
+ * Precondition: rootPtr is a root pointer of a Binary Search Tree (or may be nullptr
+ 7 for the empty tree).
+ * Postcondition: If target was in the tree, then one copy of target has been
+ * removed, rootPtr now pointes to the root of the new(smaller) binar search tree, and the
+ * function return true. Otherwise, if target was not in the tree, then the ree is unchanged,
+ * and the function returns false.
+ */
+template <class Item>
+bool bstRemove(BinaryTreeNode<Item>*& rootPtr, const Item& target) {
+    if (rootPtr == nullptr) {
+        return false;
+    } else if (target < rootPtr->data()) {
+        bstRemove(rootPtr->left(), target);
+    } else if (target > rootPtr->data()) {
+        bstRemove(rootPtr->right(), target);
+    } else {
+        bstRemove(rootPtr->left(), rootPtr->data());
+    }
+}
+
+/**
+ * Precondition: rootPtr is a root pointer of a non-empty binary search tree.
+ * Postcondition: The largest item in the binary search tree has been
+ * removed, and rootPtr now points to the root of the new (smaller) binary
+ * search tree. The reference parameter, removed, hsa been set to a copy 
+ * of the removed item.
+ */
+template <class Item>
+void bstRemoveMax(BinaryTreeNode<Item>*& rootPtr, Item& removed) {
+    if (rootPtr->right() == nullptr) {
+        removed = rootPtr->data();
+        BinaryTreeNode<Item>* oldRootPtr = rootPtr;
+        rootPtr = rootPtr->left();
+        delete oldRootPtr;
+    } else {
+        bstRemoveMax(rootPtr->right(), removed);
+    }
+}
+
+template <class Item>
+Bag<Item>::Bag() {
+    rootPtr = nullptr;
+}
+
+template <class Item>
+Bag<Item>::Bag(const Bag<Item>& source) {
+    rootPtr = treeCopy(source);
+}
+
+template <class Item>
+Bag<Item>::~Bag() {
+    treeClear(rootPtr);
+}
+
+template <class Item>
+typename Bag<Item>::sizeType Bag<Item>::erase(const Item& target) {
+    Bag<Item>::sizeType numberOfRemoves = 0;
+
+    while (count(target) != 0) {
+        bstRemove(rootPtr, target);
+        ++numberOfRemoves;
+    }
+    return numberOfRemoves;
+}
+
+template <class Item>
+bool Bag<Item>::eraseOne(const Item& target) {
+    bstRemove(rootPtr, target);
+}
+
+template <class Item>
+void Bag<Item>::insert(const Item& entry) {
+    if (rootPtr == nullptr) {
+        rootPtr = new BinaryTreeNode<Item>(entry);
+    } else {
+        BinaryTreeNode<Item>* cursor = rootPtr;
+        bool isDone = false;
+
+        while (!isDone) {
+            BinaryTreeNode<Item>* newNode = new BinaryTreeNode<Item>(entry);
+
+            if (entry <= cursor->data()) {
+                if (cursor->left() == nullptr) {
+                    cursor->setLeft(newNode);
+                    isDone = true;
+                } else {
+                    cursor = cursor->left();
+                }
+            } else if (entry > cursor->data()) {
+                if (cursor->right() == nullptr) {
+                    cursor->setRight(newNode);
+                    isDone = true;
+                } else {
+                    delete newNode;
+                    cursor = cursor->right();
+                }
+            }
+        }
+    }
+}
+
+template <class Item>
+void Bag<Item>::insertAll(const BinaryTreeNode<Item>* addRootPtr) {
+    if (addRootPtr != nullptr) {
+        insert(addRootPtr->data());
+        insertAll(addRootPtr->left());
+        insertAll(addRootPtr->right());
+    }
+}
+
+template <class Item>
+void Bag<Item>::operator+=(const Bag& addend) {
+    BinaryTreeNode<Item>* addRootPtr;
+
+    if (this == &addend) {
+        addRootPtr = treeCopy(addend.rootPtr);
+        inserAll(addRootPtr);
+        treeClear(addRootPtr);
+    } else {
+        insertAll(addend.rootPtr);
+    }
+}
+
+template <class Item>
+void Bag<Item>::operator=(const Bag& source) {
+    if (this == &source) {
+        return;
+    }
+    treeClear(rootPtr);
+    rootPtr = treeCopy(source);
+}
+
+template <class Item>
+typename Bag<Item>::sizeType Bag<Item>::size() const {
+    return treeSize(rootPtr);
+}
+
+template <class Item>
+typename Bag<Item>::sizeType Bag<Item>::count(const Item& target) const {
+    Bag<Item>::sizeType many = 0;
+    BinaryTreeNode<Item>* cursor = rootPtr;
+
+    while (cursor != nullptr) {
+        if (target < cursor->data()) {
+            cursor = cursor->left();
+        } else if (target > cursor->data()) {
+            cursor = cursor->right();
+        } else if (target == cursor->data()) {
+            ++many;
+            cursor = cursor->left();
+        }
+    }
+    return many;
+}
+
+// NONMEMBER FUNCTION
+template <class Item>
+Bag<Item> operator+(const Bag<Item>& b1, const Bag<Item>& b2) {
+    Bag<Item> b3;
+
+    b3 += b1;
+    b3 += b2;
+
+    return b3;
+}
+
+}  // namespace main_savitch_10
