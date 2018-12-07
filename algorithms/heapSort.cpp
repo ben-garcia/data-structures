@@ -65,8 +65,8 @@ void reheapifyDown(int data[], size_t n) {
     current = 0;
     heapOk = false;
 
-    while ((!heapOk) && (/* current node is not a leaf)*/) {
-        if (data[curent] < data[bidChildIndex]) {
+    while ((!heapOk) /* && ( current node is not a leaf))*/) {
+        if (data[current] < data[bidChildIndex]) {
         } else {
             heapOk = true;
         }
