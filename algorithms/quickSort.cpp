@@ -1,5 +1,10 @@
 // FILE: quickSort.cpp
-// An interactive test program for the mergeSort function.
+// An interactive test program for the quickSort function.
+//
+// The worst-caes running time of quickSort is O(n^2). But the
+// average-case running time and the best-case running time
+// for quickSort are both O(n log n). Obtaining a good running
+// time requires the choice of a good pivot element.
 
 #include <algorithm>  // provides swap
 #include <cstdlib>    // provides EXIT_SUCCESS, size_t
@@ -9,7 +14,7 @@ using namespace std;
 
 // prototype of the function used in this test program.
 void merge(int data[], size_t n1, size_t n2);
-void mergeSort(int data[], size_t n);
+void quickSort(int data[], size_t n);
 
 int main() {
     const char BLANK = ' ';
@@ -33,7 +38,7 @@ int main() {
     }
 
     // Sort the numbers, and print the result with two blanks after each number.
-    mergeSort(data, numberOfElements);
+    quickSort(data, numberOfElements);
 
     cout << "In sorted order, your numbers are: " << endl;
     for (i = 0; i < numberOfElements; ++i) {
@@ -52,7 +57,7 @@ void merge(int data[], size_t n1, size_t n2) {
     // smallest to largest.
     // NOTE: If there is insufficient dynamic memory, then bad_alloc is thrown.
     // Library facilities used: cstdlib
-    int *temp;
+    int* temp;
     // Points to dynamic array to hold the sorted elements
     size_t copied = 0;   // Number of elements copied from data to temp
     size_t copied1 = 0;  // Number copied from the first half of data
@@ -86,6 +91,23 @@ void merge(int data[], size_t n1, size_t n2) {
     }
 
     delete[] temp;
+}
+
+void partition(int data[], size_t n, size_t& pivotIndex) {
+    // Precondition: n > 1, and data is an array (or subarray)
+    // with at least n elements.
+    // Postcondition: The function has selected some "pivot value"
+    // that occurs in data[0]...data[n - 1]. The elements of data
+    // have then been rearranged and the pivot index set so that
+    //  - data[pivotIndex] is equal to the pivot;
+    //  - each item before data[pivotIndex] is <= the pivot;
+    //  - each item after data[pivotIndex] is >= the pivot.
+    size_t pivot = data[0];
+    size_t tooBigIndex = 1;        // Index of first item after pivot
+    size_t tooSmallIndex = n - 1;  // Index of last item
+
+    while (tooBigIndex <= tooSmallIndex) {
+    }
 }
 
 void quickSort(int data[], size_t n) {
