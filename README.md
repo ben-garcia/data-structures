@@ -1,4 +1,4 @@
-# Data-Structures
+# Data-Structures and Sorting Alogrithms
 
 using [Data Structures and Other Objects using C++(4th edition)](https://www.pearson.com/us/higher-education/program/Main-Data-Structures-and-Other-Objects-Using-C-4th-Edition/PGM171657.html)
 
@@ -31,4 +31,21 @@ using [Data Structures and Other Objects using C++(4th edition)](https://www.pea
   - implemented _open addressing_ using _array_
 
 - **Graph**
-  - _coming soon_
+  - implemented using _adjecency matrix_
+  - Depth-first Search
+  - Breadth-first Search
+
+#### Algorithms Include
+
+- Quadratic
+
+  - Selection Sort
+  - Insetions Sort
+
+- Recursive
+
+  - Merge Sort
+  - Quick Sort
+
+- O(n log n) using a heap
+  - Heap Sort
