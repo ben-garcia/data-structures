@@ -66,33 +66,37 @@
 
 #include <cstdlib>  // Provides size_t
 #include <set>      // Provides set
+#include <vector>
 
 namespace main_savitch_15 {
 template <class Item>
 class Graph {
-   public:
-    // MEMBER CONSTANTS
-    static const std::size_t MAXIMUM = 20;
+ public:
+  // MEMBER CONSTANTS
+  static const std::size_t MAXIMUM = 20;
 
-    // CONSTRUCTOR
-    Graph() { manyVertices = 0; }
+  // CONSTRUCTOR
+  Graph() {
+    manyVertices = 0;
+    labels.reserve(MAXIMUM);
+  }
 
-    // MODIFICATION MEMBER FUNCTIONS
-    void addVertex(const Item& label);
-    void addEdge(std::size_t source, std::size_t target);
-    void removeEdge(std::size_t source, std::size_t target);
-    Item& operator[](std::size_t vertex);
+  // MODIFICATION MEMBER FUNCTIONS
+  void addVertex(const Item& label);
+  void addEdge(const Item& source, const Item& target);
+  void removeEdge(std::size_t source, std::size_t target);
+  Item& operator[](std::size_t vertex);
 
-    // CONSTANT MEMBER FUNCTIONS
-    std::size_t size() const { return manyVertices; }
-    bool isEdge(std::size_t source, std::size_t target) const;
-    std::set<std::size_t> neighbors(std::size_t vertex) const;
-    Item operator[](std::size_t vertex) const;
+  // CONSTANT MEMBER FUNCTIONS
+  std::size_t size() const { return manyVertices; }
+  bool isEdge(const Item& source, const Item& target) const;
+  std::set<std::size_t> neighbors(std::size_t vertex) const;
+  Item operator[](std::size_t vertex) const;
 
-   private:
-    bool edges[MAXIMUM][MAXIMUM];
-    Item labels[MAXIMUM];
-    std::size_t manyVertices;
+ private:
+  bool edges[MAXIMUM][MAXIMUM];
+  std::vector<Item> labels;
+  std::size_t manyVertices;
 };
 }  // namespace main_savitch_15
 

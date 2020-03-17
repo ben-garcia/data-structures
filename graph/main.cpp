@@ -12,35 +12,29 @@ int main() {
   g.addVertex('E');
   g.addVertex('F');
 
-  g.addEdge(0, 1);
-  g.addEdge(0, 2);
+  g.addEdge('A', 'B');
+  g.addEdge('A', 'C');
 
-  g.addEdge(1, 2);
-  g.addEdge(1, 3);
-  g.addEdge(1, 5);
+  g.addEdge('B', 'C');
+  g.addEdge('B', 'D');
+  g.addEdge('B', 'F');
 
-  g.addEdge(2, 0);
-  g.addEdge(2, 1);
-  g.addEdge(2, 3);
-  g.addEdge(2, 4);
+  g.addEdge('C', 'A');
+  g.addEdge('C', 'B');
+  g.addEdge('C', 'D');
+  g.addEdge('C', 'E');
 
-  g.addEdge(3, 1);
-  g.addEdge(3, 2);
-  g.addEdge(3, 4);
-  g.addEdge(3, 5);
+  g.addEdge('D', 'B');
+  g.addEdge('D', 'C');
+  g.addEdge('D', 'E');
+  g.addEdge('D', 'F');
 
-  g.addEdge(4, 2);
-  g.addEdge(4, 3);
-  g.addEdge(4, 5);
+  g.addEdge('E', 'C');
+  g.addEdge('E', 'D');
+  g.addEdge('E', 'F');
 
-  g.addEdge(5, 3);
-  g.addEdge(5, 4);
-
-  std::cout << "--------------------bfs----------------\n";
-  main_savitch_15::breadth_first([](std::size_t i) { std::cout << (char)i << " "; }, g, 0);
-  std::cout << std::endl;
-  std::cout << "--------------------dfs----------------\n";
-  main_savitch_15::depth_first([](std::size_t i) { std::cout << (char)i << " "; }, g, 0);
+  g.addEdge('F', 'D');
+  g.addEdge('F', 'E');
 
   return 0;
 }
