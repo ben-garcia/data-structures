@@ -10,12 +10,13 @@
  *   3. For each i < manyVertices, labels[i] is the label of vertex i.
  */
 
-#include <algorithm>
-#include <cassert>  // Provides assert
-#include <cstdlib>  // Provides size_t
-#include <queue>    // Provides queue
-#include <set>      // Provides set
-#include <vector>
+#include <algorithm>  // Provides find
+#include <cassert>    // Provides assert
+#include <cstdlib>    // Provides size_t
+#include <iostream>   // Provides cout
+#include <queue>      // Provides queue
+#include <set>        // Provides set
+#include <vector>     // Provides vector
 
 namespace main_savitch_15 {
 template <class Item>
@@ -65,8 +66,8 @@ template <class Item>
 bool Graph<Item>::isEdge(const Item& source, const Item& target) const {
   auto sourceIterator = std::find(labels.begin(), labels.end(), source);
   auto targetIterator = std::find(labels.begin(), labels.end(), target);
-  if (sourceIterator == labels.end()) return false;
-  if (targetIterator == labels.end()) return false;
+  assert(sourceIterator != labels.end());
+  assert(targetIterator != labels.end());
   int sourceIndex = std::distance(labels.begin(), sourceIterator);
   int targetIndex = std::distance(labels.begin(), targetIterator);
 
@@ -86,25 +87,32 @@ Item Graph<Item>::operator[](std::size_t vertex) const {
 }
 
 template <class Item>
-std::set<std::size_t> Graph<Item>::neighbors(std::size_t vertex) const {
-  std::set<std::size_t> answer;
+std::set<Item> Graph<Item>::neighbors(const Item& vertex) const {
+  std::set<Item> neighbors;
   std::size_t i;
+  auto vertexIterator = std::find(labels.begin(), labels.end(), vertex);
 
-  assert(vertex < size());
+  assert(vertexIterator != labels.end());
+
+  std::size_t vertexIndex = std::distance(labels.begin(), vertexIterator);
 
   for (i = 0; i < size(); ++i) {
-    if (edges[vertex][i]) {
-      answer.insert(i);
+    if (edges[vertexIndex][i]) {
+      neighbors.insert(labels[i]);
     }
   }
-  return answer;
+  return neighbors;
 }
 
 template <class Item>
-void Graph<Item>::removeEdge(std::size_t source, std::size_t target) {
-  assert(source < size());
-  assert(target < size());
-  edges[source][target] = false;
+void Graph<Item>::removeEdge(const Item& source, const Item& target) {
+  auto sourceIterator = std::find(labels.begin(), labels.end(), source);
+  auto targetIterator = std::find(labels.begin(), labels.end(), target);
+  assert(sourceIterator != labels.end());
+  assert(targetIterator != labels.end());
+  std::size_t sourceIndex = std::distance(labels.begin(), sourceIterator);
+  std::size_t targetIndex = std::distance(labels.begin(), targetIterator);
+  edges[sourceIndex][targetIndex] = false;
 }
 
 // Graph Traversal Algorithms
@@ -143,31 +151,36 @@ void depth_first(Process f, Graph<Item>& g, SizeType start) {
   rec_dfs(f, g, start, marked);
 }
 
-template <class Process, class Item, class SizeType>
-void breadth_first(Process f, Graph<Item>& g, SizeType start) {
+template <class Item>
+void Graph<Item>::bfs(const Item& source) {
   // Same as the depth_first function, but using a breadth-first search instead
   // Library facilities used: algorithm, cassert, cstdlib, graph.h, queue
-  bool marked[g.MAXIMUM];
-  std::set<std::size_t> connections;
-  std::set<std::size_t>::iterator it;
-  std::queue<std::size_t> vertex_queue;
-  assert(start < g.size());
-  std::fill_n(marked, g.size(), false);
-  marked[start] = true;
-  f(g[start]);
-  vertex_queue.push(start);
+  bool visited[this->MAXIMUM];
+  std::set<Item> connections;
+  std::queue<Item> vertexQueue;
+  auto sourceIterator = std::find(labels.begin(), labels.end(), source);
+
+  assert(sourceIterator != this->labels.end());
+  std::fill_n(visited, this->size(), false);
+  std::size_t sourceIndex = std::distance(this->labels.begin(), sourceIterator);
+
+  visited[sourceIndex] = true;
+  std::cout << this->labels[sourceIndex] << " ";
+  vertexQueue.push(labels[sourceIndex]);
   do {
-    connections = g.neighbors(vertex_queue.front());
-    vertex_queue.pop();
+    connections = this->neighbors(vertexQueue.front());
+    vertexQueue.pop();
     // Mark and process the unmarked neighbors, and place them in the queue.
-    for (it = connections.begin(); it != connections.end(); ++it) {
-      if (!marked[*it]) {
-        marked[*it] = true;
-        f(g[*it]);
-        vertex_queue.push(*it);
+    for (auto it = connections.begin(); it != connections.end(); ++it) {
+      auto connectionIterator = std::find(this->labels.begin(), labels.end(), *it);
+      auto connectionIndex = std::distance(this->labels.begin(), connectionIterator);
+      if (!visited[connectionIndex]) {
+        visited[connectionIndex] = true;
+        std::cout << this->labels[connectionIndex] << " ";
+        vertexQueue.push(*connectionIterator);
       }
     }
-  } while (!vertex_queue.empty());
+  } while (!vertexQueue.empty());
 }
 
 }  // namespace main_savitch_15

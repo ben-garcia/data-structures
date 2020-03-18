@@ -84,14 +84,15 @@ class Graph {
   // MODIFICATION MEMBER FUNCTIONS
   void addVertex(const Item& label);
   void addEdge(const Item& source, const Item& target);
-  void removeEdge(std::size_t source, std::size_t target);
+  void removeEdge(const Item& source, const Item& target);
   Item& operator[](std::size_t vertex);
 
   // CONSTANT MEMBER FUNCTIONS
   std::size_t size() const { return manyVertices; }
   bool isEdge(const Item& source, const Item& target) const;
-  std::set<std::size_t> neighbors(std::size_t vertex) const;
+  std::set<Item> neighbors(const Item& vertex) const;
   Item operator[](std::size_t vertex) const;
+  void bfs(const Item& source);
 
  private:
   bool edges[MAXIMUM][MAXIMUM];

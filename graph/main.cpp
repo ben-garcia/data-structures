@@ -3,6 +3,7 @@
 #include "Graph.h"
 
 int main() {
+  // directed unweighted graph
   main_savitch_15::Graph<char> g = main_savitch_15::Graph<char>();
 
   g.addVertex('A');
@@ -11,13 +12,14 @@ int main() {
   g.addVertex('D');
   g.addVertex('E');
   g.addVertex('F');
+  g.addVertex('G');
 
   g.addEdge('A', 'B');
   g.addEdge('A', 'C');
 
   g.addEdge('B', 'C');
   g.addEdge('B', 'D');
-  g.addEdge('B', 'F');
+  g.addEdge('B', 'G');
 
   g.addEdge('C', 'A');
   g.addEdge('C', 'B');
@@ -35,6 +37,9 @@ int main() {
 
   g.addEdge('F', 'D');
   g.addEdge('F', 'E');
+  g.addEdge('F', 'G');
+
+  g.bfs('A');  // A, B, C, D, G, E, F
 
   return 0;
 }
