@@ -39,7 +39,11 @@ int main() {
   g.addEdge('F', 'E');
   g.addEdge('F', 'G');
 
+  std::cout << "bfs: ";
   g.bfs('A');  // A, B, C, D, G, E, F
+  std::cout << std::endl;
+  std::cout << "dfs: ";
+  g.dfs('A');  //A, B, C, D, E, F, G
 
   return 0;
 }

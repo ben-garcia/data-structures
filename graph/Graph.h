@@ -92,12 +92,15 @@ class Graph {
   bool isEdge(const Item& source, const Item& target) const;
   std::set<Item> neighbors(const Item& vertex) const;
   Item operator[](std::size_t vertex) const;
+  void dfs(const Item& source);
   void bfs(const Item& source);
 
  private:
   bool edges[MAXIMUM][MAXIMUM];
   std::vector<Item> labels;
   std::size_t manyVertices;
+
+  void recDfs(const Item& source, bool visited[]);
 };
 }  // namespace main_savitch_15
 

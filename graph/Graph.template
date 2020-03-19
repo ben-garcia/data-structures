@@ -116,47 +116,38 @@ void Graph<Item>::removeEdge(const Item& source, const Item& target) {
 }
 
 // Graph Traversal Algorithms
-template <class Process, class Item, class SizeType>
-void rec_dfs(Process f, Graph<Item>& g, SizeType v, bool marked[]) {
-  // Precondition: g is a labeled graph that is being traversed by a depth-first search. For each
-  // vertex x, marked[x] is true if x has already been visited by this search, otherwise marked[x]
-  // is false. The vertex v is an unmarked vertex that the search has just arrived at.
-  // Postcondition: The depth-first search of g has been continued through vertex v and beyond
-  // to all the vertices that can be reached from v via a path of unmarked vertices. The function
-  // f has been applied to the label of each vertex visited by the search, and each such vertex x
-  // has also been marked by setting marked[x] to true.
-  // Library facilities used: cstdlib, graph.h, set
-  std::set<std::size_t> connections = g.neighbors(v);
-  std::set<std::size_t>::iterator it;
-  marked[v] = true;
-  f(g[v]);
-  // Mark vertex v.
-  // Process the label of vertex v with the function f.
-  // Traverse all the neighbors, looking for unmarked vertices:
-  for (it = connections.begin(); it != connections.end(); ++it) {
-    if (!marked[*it])
-      rec_dfs(f, g, *it, marked);
+template <class Item>
+void Graph<Item>::recDfs(const Item& source, bool visited[]) {
+  std::set<Item> neighbors = this->neighbors(source);
+  auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
+  auto sourceIndex = std::distance(this->labels.begin(), sourceIterator);
+  visited[sourceIndex] = true;
+  std::cout << this->labels[sourceIndex] << " ";
+  // Traverse all the neighbors, looking for unvisisted vertices:
+  for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
+    auto neighborInterator = std::find(this->labels.begin(), this->labels.end(), *it);
+    auto neighborIndex = std::distance(this->labels.begin(), neighborInterator);
+    if (!visited[neighborIndex])
+      this->recDfs(*it, visited);
   }
 }
 
-template <class Process, class Item, class SizeType>
-void depth_first(Process f, Graph<Item>& g, SizeType start) {
-  // Precondition: start is a vertex number of the labeled graph g.
-  // Postcondition: A depth-first search of g has been executed, starting at the start vertex.
-  // The function f has been applied to the label of each vertex visited by the search.
-  // Library facilities used: algorithm, cassert, graph.h
-  bool marked[g.MAXIMUM];
-  assert(start < g.size());
-  std::fill_n(marked, g.size(), false);
-  rec_dfs(f, g, start, marked);
+template <class Item>
+void Graph<Item>::dfs(const Item& source) {
+  auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
+
+  assert(sourceIterator != this->labels.end());
+
+  bool visited[this->size()];
+
+  std::fill_n(visited, this->size(), false);
+  this->recDfs(source, visited);
 }
 
 template <class Item>
 void Graph<Item>::bfs(const Item& source) {
-  // Same as the depth_first function, but using a breadth-first search instead
-  // Library facilities used: algorithm, cassert, cstdlib, graph.h, queue
   bool visited[this->MAXIMUM];
-  std::set<Item> connections;
+  std::set<Item> neigbors;
   std::queue<Item> vertexQueue;
   auto sourceIterator = std::find(labels.begin(), labels.end(), source);
 
@@ -168,16 +159,16 @@ void Graph<Item>::bfs(const Item& source) {
   std::cout << this->labels[sourceIndex] << " ";
   vertexQueue.push(labels[sourceIndex]);
   do {
-    connections = this->neighbors(vertexQueue.front());
+    neigbors = this->neighbors(vertexQueue.front());
     vertexQueue.pop();
     // Mark and process the unmarked neighbors, and place them in the queue.
-    for (auto it = connections.begin(); it != connections.end(); ++it) {
-      auto connectionIterator = std::find(this->labels.begin(), labels.end(), *it);
-      auto connectionIndex = std::distance(this->labels.begin(), connectionIterator);
-      if (!visited[connectionIndex]) {
-        visited[connectionIndex] = true;
-        std::cout << this->labels[connectionIndex] << " ";
-        vertexQueue.push(*connectionIterator);
+    for (auto it = neigbors.begin(); it != neigbors.end(); ++it) {
+      auto neighborIterator = std::find(this->labels.begin(), labels.end(), *it);
+      auto neighborIndex = std::distance(this->labels.begin(), neighborIterator);
+      if (!visited[neighborIndex]) {
+        visited[neighborIndex] = true;
+        std::cout << this->labels[neighborIndex] << " ";
+        vertexQueue.push(*it);
       }
     }
   } while (!vertexQueue.empty());
