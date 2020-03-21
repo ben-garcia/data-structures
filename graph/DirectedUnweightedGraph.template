@@ -1,0 +1,179 @@
+/**
+ * FILE: Graph.template (part of the namespace main_savitch_15)
+ * TEMPLATE CLASS IMPLEMENTATION: Graph<Item> (See Graph.h for documentation.)
+ * This file is included in the header file and not compiled separately.
+ * INVARIANT for the Graph class:
+ *   1. The number of vertices in the graph are stored in the member variable manyVertices.
+ *      These vertices are numbered from 0 to manyVertices - 1.
+ *   2. edges is the adjacency matrix for the graph (with true in edges[i][j] to indicate an
+ *      edge from vertex i to vertex j).
+ *   3. For each i < manyVertices, labels[i] is the label of vertex i.
+ */
+
+#include <algorithm>  // Provides find
+#include <cassert>    // Provides assert
+#include <cstdlib>    // Provides size_t
+#include <iostream>   // Provides cout
+#include <queue>      // Provides queue
+#include <set>        // Provides set
+#include <vector>     // Provides vector
+
+namespace main_savitch_15 {
+template <class Item>
+const std::size_t DirectedUnweightedGraph<Item>::MAXIMUM;
+
+template <class Item>
+void DirectedUnweightedGraph<Item>::addEdge(const Item& source, const Item& target) {
+  // check if the source Item is in the vector
+  auto sourceIterator = std::find(labels.begin(), labels.end(), source);
+  // check if the target Item is in the vecto4
+  auto targetIterator = std::find(labels.begin(), labels.end(), target);
+  // if the iterator points to the end
+  // that means that labels vector doesn't contain source
+  if (sourceIterator == labels.end()) return;
+  // if the iterator points to the end
+  // that means that labels vector doesn't contain target
+  if (targetIterator == labels.end()) return;
+  // counting the distance between the start of the labels vector
+  // and the iterator is the index of the element
+  // for source
+  int sourceIndex = std::distance(labels.begin(), sourceIterator);
+  // for target
+  int targetIndex = std::distance(labels.begin(), targetIterator);
+  // set the cell in the matrix to indicate there is an edge
+  // between source and target
+  edges[sourceIndex][targetIndex] = true;
+}
+
+template <class Item>
+void DirectedUnweightedGraph<Item>::addVertex(const Item& label) {
+  std::size_t newVertexNumber;
+  std::size_t otherNumber;
+
+  assert(size() < MAXIMUM);
+  newVertexNumber = manyVertices;
+  ++manyVertices;
+
+  for (otherNumber = 0; otherNumber < manyVertices; ++otherNumber) {
+    edges[otherNumber][newVertexNumber] = false;
+    edges[newVertexNumber][otherNumber] = false;
+  }
+  // add the new vertex to the labels vector
+  labels.push_back(label);
+}
+
+template <class Item>
+bool DirectedUnweightedGraph<Item>::isEdge(const Item& source, const Item& target) const {
+  auto sourceIterator = std::find(labels.begin(), labels.end(), source);
+  auto targetIterator = std::find(labels.begin(), labels.end(), target);
+  assert(sourceIterator != labels.end());
+  assert(targetIterator != labels.end());
+  int sourceIndex = std::distance(labels.begin(), sourceIterator);
+  int targetIndex = std::distance(labels.begin(), targetIterator);
+
+  return edges[sourceIndex][targetIndex];
+}
+
+template <class Item>
+Item& DirectedUnweightedGraph<Item>::operator[](std::size_t vertex) {
+  assert(vertex < size());
+  return labels[vertex];  // Returns a reference to the label.
+}
+
+template <class Item>
+Item DirectedUnweightedGraph<Item>::operator[](std::size_t vertex) const {
+  assert(vertex < size());
+  return labels[vertex];  // Returns only a copy of the label.
+}
+
+template <class Item>
+std::set<Item> DirectedUnweightedGraph<Item>::neighbors(const Item& vertex) const {
+  std::set<Item> neighbors;
+  std::size_t i;
+  auto vertexIterator = std::find(labels.begin(), labels.end(), vertex);
+
+  assert(vertexIterator != labels.end());
+
+  std::size_t vertexIndex = std::distance(labels.begin(), vertexIterator);
+
+  for (i = 0; i < size(); ++i) {
+    if (edges[vertexIndex][i]) {
+      neighbors.insert(labels[i]);
+    }
+  }
+  return neighbors;
+}
+
+template <class Item>
+void DirectedUnweightedGraph<Item>::removeEdge(const Item& source, const Item& target) {
+  auto sourceIterator = std::find(labels.begin(), labels.end(), source);
+  auto targetIterator = std::find(labels.begin(), labels.end(), target);
+  assert(sourceIterator != labels.end());
+  assert(targetIterator != labels.end());
+  std::size_t sourceIndex = std::distance(labels.begin(), sourceIterator);
+  std::size_t targetIndex = std::distance(labels.begin(), targetIterator);
+  edges[sourceIndex][targetIndex] = false;
+}
+
+// Graph Traversal Algorithms
+template <class Item>
+void DirectedUnweightedGraph<Item>::recDfs(const Item& source, bool visited[]) {
+  std::set<Item> neighbors = this->neighbors(source);
+  auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
+  auto sourceIndex = std::distance(this->labels.begin(), sourceIterator);
+
+  visited[sourceIndex] = true;
+  std::cout << this->labels[sourceIndex] << " ";
+  // Traverse all the neighbors, looking for unvisisted vertices:
+  for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
+    auto neighborInterator = std::find(this->labels.begin(), this->labels.end(), *it);
+    auto neighborIndex = std::distance(this->labels.begin(), neighborInterator);
+    if (!visited[neighborIndex])
+      this->recDfs(*it, visited);
+  }
+}
+
+template <class Item>
+void DirectedUnweightedGraph<Item>::dfs(const Item& source) {
+  auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
+
+  assert(sourceIterator != this->labels.end());
+
+  bool visited[this->size()];
+
+  std::fill_n(visited, this->size(), false);
+  this->recDfs(source, visited);
+}
+
+template <class Item>
+void DirectedUnweightedGraph<Item>::bfs(const Item& source) {
+  bool visited[this->MAXIMUM];
+  std::set<Item> neigbors;
+  std::queue<Item> vertexQueue;
+  auto sourceIterator = std::find(labels.begin(), labels.end(), source);
+
+  assert(sourceIterator != this->labels.end());
+  std::fill_n(visited, this->size(), false);
+  std::size_t sourceIndex = std::distance(this->labels.begin(), sourceIterator);
+
+  visited[sourceIndex] = true;
+  std::cout << this->labels[sourceIndex] << " ";
+  vertexQueue.push(labels[sourceIndex]);
+
+  while (!vertexQueue.empty()) {
+    neigbors = this->neighbors(vertexQueue.front());
+    vertexQueue.pop();
+    // Mark and process the unmarked neighbors, and place them in the queue.
+    for (auto it = neigbors.begin(); it != neigbors.end(); ++it) {
+      auto neighborIterator = std::find(this->labels.begin(), labels.end(), *it);
+      auto neighborIndex = std::distance(this->labels.begin(), neighborIterator);
+      if (!visited[neighborIndex]) {
+        visited[neighborIndex] = true;
+        std::cout << this->labels[neighborIndex] << " ";
+        vertexQueue.push(*it);
+      }
+    }
+  };
+}
+
+}  // namespace main_savitch_15

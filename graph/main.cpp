@@ -1,49 +1,58 @@
 #include <iostream>
+#include <set>
 
-#include "Graph.h"
+#include "DirectedUnweightedGraph.h"
+#include "UndirectedWeightedGraph.h"
 
 int main() {
   // directed unweighted graph
-  main_savitch_15::Graph<char> g = main_savitch_15::Graph<char>();
+  main_savitch_15::DirectedUnweightedGraph<char> g = main_savitch_15::DirectedUnweightedGraph<char>();
+  // undirected unweighted graph
+  main_savitch_15::UndirectedWeightedGraph<char> wg = main_savitch_15::UndirectedWeightedGraph<char>();
 
+  std::cout << "===============Directed Unweighted Graph============\n";
   g.addVertex('A');
   g.addVertex('B');
   g.addVertex('C');
   g.addVertex('D');
   g.addVertex('E');
-  g.addVertex('F');
-  g.addVertex('G');
 
   g.addEdge('A', 'B');
   g.addEdge('A', 'C');
 
+  g.addEdge('B', 'A');
   g.addEdge('B', 'C');
-  g.addEdge('B', 'D');
-  g.addEdge('B', 'G');
+  g.addEdge('B', 'E');
 
   g.addEdge('C', 'A');
   g.addEdge('C', 'B');
   g.addEdge('C', 'D');
-  g.addEdge('C', 'E');
-
-  g.addEdge('D', 'B');
-  g.addEdge('D', 'C');
-  g.addEdge('D', 'E');
-  g.addEdge('D', 'F');
-
-  g.addEdge('E', 'C');
-  g.addEdge('E', 'D');
-  g.addEdge('E', 'F');
-
-  g.addEdge('F', 'D');
-  g.addEdge('F', 'E');
-  g.addEdge('F', 'G');
 
   std::cout << "bfs: ";
-  g.bfs('A');  // A, B, C, D, G, E, F
+  g.bfs('A');
   std::cout << std::endl;
   std::cout << "dfs: ";
-  g.dfs('A');  //A, B, C, D, E, F, G
+  g.dfs('A');
 
+  std::cout << "\n===============Undirected Weighted Graph============\n";
+  wg.addVertex('A');
+  wg.addVertex('B');
+  wg.addVertex('C');
+  wg.addVertex('D');
+  wg.addVertex('E');
+
+  wg.addEdge('A', 'B', 4);
+  wg.addEdge('A', 'D', 3);
+  wg.addEdge('B', 'C', 2);
+  wg.addEdge('C', 'E', 8);
+  wg.addEdge('D', 'C', 6);
+
+  std::cout << "bfs: ";
+  wg.bfs('A');
+  std::cout << std::endl;
+  std::cout << "dfs: ";
+  wg.dfs('A');
+  std::cout
+      << "\n====================================================\n";
   return 0;
 }

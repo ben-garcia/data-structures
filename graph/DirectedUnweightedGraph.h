@@ -61,8 +61,8 @@
  *   Assignments and the copy constructor may be used with Graph<Item> objects.
  */
 
-#ifndef MAIN_SAVITCH_GRAPH_H
-#define MAIN_SAVITCH_GRAPH_H
+#ifndef MAIN_SAVITCH_DIRECTED_UNWEIGHTED_GRAPH_H
+#define MAIN_SAVITCH_DIRECTED_UNWEIGHTED_GRAPH_H
 
 #include <cstdlib>  // Provides size_t
 #include <set>      // Provides set
@@ -70,13 +70,13 @@
 
 namespace main_savitch_15 {
 template <class Item>
-class Graph {
+class DirectedUnweightedGraph {
  public:
   // MEMBER CONSTANTS
   static const std::size_t MAXIMUM = 20;
 
   // CONSTRUCTOR
-  Graph() {
+  DirectedUnweightedGraph() {
     manyVertices = 0;
     labels.reserve(MAXIMUM);
   }
@@ -104,5 +104,5 @@ class Graph {
 };
 }  // namespace main_savitch_15
 
-#include "Graph.template"  // Include the implementation.
+#include "DirectedUnweightedGraph.template"  // Include the implementation.
 #endif
