@@ -28,9 +28,10 @@ class UndirectedWeightedGraph {
   // CONSTANT MEMBER FUNCTIONS
   std::size_t size() const { return manyVertices; }
   bool isEdge(const Item& source, const Item& target) const;
-  std::set<Item> neighbors(const Item& vertex) const;
+  std::set<std::pair<Item, int>> neighbors(const Item& vertex) const;
   void dfs(const Item& source);
   void bfs(const Item& source);
+  void dijkstra(const Item& source);
 
  private:
   std::list<std::pair<Item, int>> adjacencyList[MAXIMUM];

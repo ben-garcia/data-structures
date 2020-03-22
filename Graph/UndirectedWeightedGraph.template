@@ -82,21 +82,21 @@ void UndirectedWeightedGraph<Item>::removeEdge(const Item& source, const Item& t
 }
 
 template <class Item>
-std::set<Item> UndirectedWeightedGraph<Item>::neighbors(const Item& vertex) const {
-  std::set<Item> neighbors;
+std::set<std::pair<Item, int>> UndirectedWeightedGraph<Item>::neighbors(const Item& vertex) const {
+  std::set<std::pair<Item, int>> neighbors;
   auto vertexIterator = std::find(labels.begin(), labels.end(), vertex);
   assert(vertexIterator != labels.end());
   std::size_t vertexIndex = std::distance(labels.begin(), vertexIterator);
   for (auto it = adjacencyList[vertexIndex].begin(); it != adjacencyList[vertexIndex].end(); it++) {
-    neighbors.insert(it->first);
+    neighbors.insert({it->first, it->second});
   }
-  return neighbors;
+  return neighbors;  // returning Item and weight
 }
 
 // Graph Traversal Algorithms
 template <class Item>
 void UndirectedWeightedGraph<Item>::recDfs(const Item& source, bool visited[]) {
-  std::set<Item> neighbors = this->neighbors(source);
+  std::set<std::pair<Item, int>> neighbors = this->neighbors(source);
   auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
   auto sourceIndex = std::distance(this->labels.begin(), sourceIterator);
 
@@ -104,10 +104,10 @@ void UndirectedWeightedGraph<Item>::recDfs(const Item& source, bool visited[]) {
   std::cout << this->labels[sourceIndex] << " ";
   // Traverse all the neighbors, looking for unvisisted vertices:
   for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
-    auto neighborInterator = std::find(this->labels.begin(), this->labels.end(), *it);
+    auto neighborInterator = std::find(this->labels.begin(), this->labels.end(), it->first);
     auto neighborIndex = std::distance(this->labels.begin(), neighborInterator);
     if (!visited[neighborIndex])
-      this->recDfs(*it, visited);
+      this->recDfs(it->first, visited);
   }
 }
 
@@ -126,7 +126,7 @@ void UndirectedWeightedGraph<Item>::dfs(const Item& source) {
 template <class Item>
 void UndirectedWeightedGraph<Item>::bfs(const Item& source) {
   bool visited[this->MAXIMUM];
-  std::set<Item> neigbors;
+  std::set<std::pair<Item, int>> neigbors;
   std::queue<Item> vertexQueue;
   auto sourceIterator = std::find(labels.begin(), labels.end(), source);
 
@@ -143,12 +143,12 @@ void UndirectedWeightedGraph<Item>::bfs(const Item& source) {
     vertexQueue.pop();
     // Mark and process the unmarked neighbors, and place them in the queue.
     for (auto it = neigbors.begin(); it != neigbors.end(); ++it) {
-      auto neighborIterator = std::find(this->labels.begin(), labels.end(), *it);
+      auto neighborIterator = std::find(this->labels.begin(), labels.end(), it->first);
       auto neighborIndex = std::distance(this->labels.begin(), neighborIterator);
       if (!visited[neighborIndex]) {
         visited[neighborIndex] = true;
         std::cout << this->labels[neighborIndex] << " ";
-        vertexQueue.push(*it);
+        vertexQueue.push(it->first);
       }
     }
   };
