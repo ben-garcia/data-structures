@@ -2,6 +2,7 @@
 #include <cassert>    // Provides assert
 #include <cstdlib>    // Provides size_t
 #include <iostream>   // Provides cout
+#include <limits>     // Provides INFINITY
 #include <queue>      // Provides queue
 #include <set>        // Provides set
 #include <vector>     // Provides vector
@@ -21,6 +22,8 @@ void UndirectedWeightedGraph<Item>::addVertex(const Item& label) {
 
 template <class Item>
 void UndirectedWeightedGraph<Item>::addEdge(const Item& source, const Item& target, int weight) {
+  // make sure weight is a non negative number
+  assert(weight > 0);
   auto sourceIterator = std::find(labels.begin(), labels.end(), source);
   auto targetIterator = std::find(labels.begin(), labels.end(), target);
   if (sourceIterator == labels.end()) return;
@@ -49,7 +52,6 @@ bool UndirectedWeightedGraph<Item>::isEdge(const Item& source, const Item& targe
   for (auto it = adjacencyList[sourceIndex].begin(); it != adjacencyList[sourceIndex].end(); it++) {
     if (target == it->first) return true;
   }
-
   return false;
 }
 
@@ -114,11 +116,8 @@ void UndirectedWeightedGraph<Item>::recDfs(const Item& source, bool visited[]) {
 template <class Item>
 void UndirectedWeightedGraph<Item>::dfs(const Item& source) {
   auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
-
   assert(sourceIterator != this->labels.end());
-
   bool visited[this->size()];
-
   std::fill_n(visited, this->size(), false);
   this->recDfs(source, visited);
 }
@@ -152,6 +151,48 @@ void UndirectedWeightedGraph<Item>::bfs(const Item& source) {
       }
     }
   };
+}
+
+// modified version of geekforgeeks' dijkstra algorithm implementation
+// https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-using-set-in-stl/
+template <class Item>
+void UndirectedWeightedGraph<Item>::dijkstra(const Item& source) {
+  auto sourceIterator = std::find(this->labels.begin(), this->labels.end(), source);
+  // validate the source vertex
+  assert(sourceIterator != this->labels.end());
+  // set up infinity
+  const int INF = std::numeric_limits<int>::max();
+  std::size_t sourceIndex = std::distance(this->labels.begin(), sourceIterator);
+  // set to contain distance from source(start) vertex and index
+  std::set<std::pair<int, int>> setds;
+  std::vector<int> dist(this->size(), INF);
+  setds.insert({0, sourceIndex});
+  dist[sourceIndex] = 0;
+  // loop until the set is empty
+  while (!setds.empty()) {
+    std::pair<int, int> tmp = *(setds.begin());
+    setds.erase(setds.begin());
+    int vertexIndex = tmp.second;
+    for (auto it = adjacencyList[vertexIndex].begin(); it != adjacencyList[vertexIndex].end(); it++) {
+      auto vertexIterator = std::find(this->labels.begin(), this->labels.end(), it->first);
+      // locate the index of the neighbor in the labels array
+      int neighborIndex = std::distance(this->labels.begin(), vertexIterator);
+      int weight = it->second;
+      if (dist[neighborIndex] > dist[vertexIndex] + weight) {
+        if (dist[neighborIndex] != INF) {
+          setds.erase(setds.find({dist[neighborIndex], neighborIndex}));
+        }
+        dist[neighborIndex] = dist[vertexIndex] + weight;
+        setds.insert({dist[neighborIndex], neighborIndex});
+      }
+    }
+  }
+  printf("Vertex   Distance from Source\n");
+  for (auto it = this->labels.begin(); it != this->labels.end(); it++) {
+    auto itr = std::find(this->labels.begin(), this->labels.end(), *it);
+    auto vertexIndex = std::distance(this->labels.begin(), itr);
+    printf("%c \t\t %d\n", this->labels[vertexIndex], dist[vertexIndex]);
+  }
 }
 
 }  // namespace main_savitch_15

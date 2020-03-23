@@ -52,7 +52,9 @@ int main() {
   std::cout << std::endl;
   std::cout << "dfs: ";
   wg.dfs('A');
-  std::cout
-      << "\n====================================================\n";
+  std::cout << std::endl;
+  std::cout << "dijkstra's algorithm from vertex A: \n";
+  wg.dijkstra('A');
+  std::cout << "====================================================\n";
   return 0;
 }
