@@ -163,27 +163,31 @@ void UndirectedWeightedGraph<Item>::dijkstra(const Item& source) {
   // set up infinity
   const int INF = std::numeric_limits<int>::max();
   std::size_t sourceIndex = std::distance(this->labels.begin(), sourceIterator);
-  // set to contain distance from source(start) vertex and index
-  std::set<std::pair<int, int>> setds;
-  std::vector<int> dist(this->size(), INF);
-  setds.insert({0, sourceIndex});
-  dist[sourceIndex] = 0;
+  // set to contain distance from source(start) vertex and its index
+  std::set<std::pair<int, int>> vertices;
+  int dist[this->size()];
+  // set every element in dist array to INF
+  std::fill_n(dist, this->size(), INF);
+  vertices.insert({0, sourceIndex});
+  dist[sourceIndex] = 0;  // set the distance to 0 for the source
   // loop until the set is empty
-  while (!setds.empty()) {
-    std::pair<int, int> tmp = *(setds.begin());
-    setds.erase(setds.begin());
+  while (!vertices.empty()) {
+    // holds the distance and index of vertices in the set
+    std::pair<int, int> tmp = *(vertices.begin());
+    vertices.erase(vertices.begin());
     int vertexIndex = tmp.second;
+    // iterate through the neighbors
     for (auto it = adjacencyList[vertexIndex].begin(); it != adjacencyList[vertexIndex].end(); it++) {
-      auto vertexIterator = std::find(this->labels.begin(), this->labels.end(), it->first);
+      auto neighborIterator = std::find(this->labels.begin(), this->labels.end(), it->first);
       // locate the index of the neighbor in the labels array
-      int neighborIndex = std::distance(this->labels.begin(), vertexIterator);
-      int weight = it->second;
-      if (dist[neighborIndex] > dist[vertexIndex] + weight) {
+      int neighborIndex = std::distance(this->labels.begin(), neighborIterator);
+      int edgeWeight = it->second;
+      if (dist[neighborIndex] > dist[vertexIndex] + edgeWeight) {
         if (dist[neighborIndex] != INF) {
-          setds.erase(setds.find({dist[neighborIndex], neighborIndex}));
+          vertices.erase(vertices.find({dist[neighborIndex], neighborIndex}));
         }
-        dist[neighborIndex] = dist[vertexIndex] + weight;
-        setds.insert({dist[neighborIndex], neighborIndex});
+        dist[neighborIndex] = dist[vertexIndex] + edgeWeight;  // update dist array
+        vertices.insert({dist[neighborIndex], neighborIndex});
       }
     }
   }
