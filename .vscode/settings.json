@@ -46,7 +46,8 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "functional": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "list": "cpp"
   },
   "vim.hlsearch": true,
 

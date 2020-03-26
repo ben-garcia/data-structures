@@ -1,11 +1,12 @@
-#include <algorithm>  // Provides find
-#include <cassert>    // Provides assert
-#include <cstdlib>    // Provides size_t
-#include <iostream>   // Provides cout
-#include <limits>     // Provides INFINITY
-#include <queue>      // Provides queue
-#include <set>        // Provides set
-#include <vector>     // Provides vector
+#include <algorithm>   // Provides find
+#include <cassert>     // Provides assert
+#include <cstdlib>     // Provides size_t
+#include <functional>  // Provides greater
+#include <iostream>    // Provides cout
+#include <limits>      // Provides INFINITY
+#include <queue>       // Provides queue
+#include <set>         // Provides set
+#include <vector>      // Provides vector
 
 namespace main_savitch_15 {
 template <class Item>
@@ -164,17 +165,22 @@ void UndirectedWeightedGraph<Item>::dijkstra(const Item& source) {
   const int INF = std::numeric_limits<int>::max();
   std::size_t sourceIndex = std::distance(this->labels.begin(), sourceIterator);
   // set to contain distance from source(start) vertex and its index
-  std::set<std::pair<int, int>> vertices;
+  // using priority queue
+  std::priority_queue<
+      std::pair<int, int>,                // data to store
+      std::vector<std::pair<int, int>>,   // implement pq using container
+      std::greater<std::pair<int, int>>>  // min heap
+      vertices;
   int dist[this->size()];
   // set every element in dist array to INF
   std::fill_n(dist, this->size(), INF);
-  vertices.insert({0, sourceIndex});
+  vertices.push({0, sourceIndex});
   dist[sourceIndex] = 0;  // set the distance to 0 for the source
   // loop until the set is empty
-  while (!vertices.empty()) {
+  while (vertices.size() != 0) {
     // holds the distance and index of vertices in the set
-    std::pair<int, int> tmp = *(vertices.begin());
-    vertices.erase(vertices.begin());
+    std::pair<int, int> tmp = vertices.top();
+    vertices.pop();
     int vertexIndex = tmp.second;
     // iterate through the neighbors
     for (auto it = adjacencyList[vertexIndex].begin(); it != adjacencyList[vertexIndex].end(); it++) {
@@ -184,10 +190,10 @@ void UndirectedWeightedGraph<Item>::dijkstra(const Item& source) {
       int edgeWeight = it->second;
       if (dist[neighborIndex] > dist[vertexIndex] + edgeWeight) {
         if (dist[neighborIndex] != INF) {
-          vertices.erase(vertices.find({dist[neighborIndex], neighborIndex}));
+          vertices.pop();
         }
         dist[neighborIndex] = dist[vertexIndex] + edgeWeight;  // update dist array
-        vertices.insert({dist[neighborIndex], neighborIndex});
+        vertices.push({dist[neighborIndex], neighborIndex});
       }
     }
   }
