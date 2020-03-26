@@ -16,7 +16,7 @@ template <class Item>
 void UndirectedWeightedGraph<Item>::addVertex(const Item& label) {
   // increment the vertex count
   // add the vertex
-  adjacencyList[manyVertices++] = std::list<std::pair<Item, int>>();
+  adjacencyList[manyVertices++] = std::forward_list<std::pair<Item, int>>();
   // add the new vertex to the labels vector
   labels.push_back(label);
 }

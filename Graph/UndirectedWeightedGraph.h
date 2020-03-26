@@ -1,11 +1,11 @@
 #ifndef MAIN_SAVITCH_UNDIRECTED_WEIGHTED_GRAPH_H
 #define MAIN_SAVITCH_UNDIRECTED_WEIGHTED_GRAPH_H
 
-#include <cstdlib>  // Provides size_t
-#include <list>     // Provides list
-#include <set>      // Provides set
-#include <utility>  // Provides pair
-#include <vector>   // Provides vector
+#include <cstdlib>       // Provides size_t
+#include <forward_list>  // Provides list
+#include <set>           // Provides set
+#include <utility>       // Provides pair
+#include <vector>        // Provides vector
 
 namespace main_savitch_15 {
 template <class Item>
@@ -34,7 +34,7 @@ class UndirectedWeightedGraph {
   void dijkstra(const Item& source);
 
  private:
-  std::list<std::pair<Item, int>> adjacencyList[MAXIMUM];
+  std::forward_list<std::pair<Item, int>> adjacencyList[MAXIMUM];
   std::vector<Item> labels;
   std::size_t manyVertices;
 
